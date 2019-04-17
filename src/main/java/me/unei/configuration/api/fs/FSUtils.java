@@ -45,7 +45,7 @@ public abstract class FSUtils {
 	 * <p>Removes the 'parent' and 'child' components where unneeded.</p>
 	 * 
 	 * @param path The path to clean.
-	 * @return Returns the new {@link PathComponentsList} after the cleaning.
+	 * @return Returns the new {@link IPathComponentsList} after the cleaning.
 	 */
 	public static IPathComponentsList cleanPath(IPathComponentsList path) {
 		return getInstance().internal_cleanPath(path);
@@ -68,6 +68,7 @@ public abstract class FSUtils {
 	 * 
 	 * @param type The type of the component.
 	 * @param value The name of the component.
+	 * @return Returns the newly created path component.
 	 */
 	public static IPathComponent createComponent(PathComponentType type, String value) {
 		return getInstance().internal_createComponent(type, value);
@@ -78,6 +79,7 @@ public abstract class FSUtils {
 	 * 
 	 * @param type The type of the component.
 	 * @param index The index of the component.
+	 * @return Returns the newly created path component.
 	 */
 	public static IPathComponent createComponent(PathComponentType type, int index) {
 		return getInstance().internal_createComponent(type, index);
@@ -86,7 +88,8 @@ public abstract class FSUtils {
 	/**
 	 * Constructs an empty path with an initial capacity of ten components.
 	 * 
-	 * @param type The type of the symbols used in string paths.
+	 * @param symType The type of the symbols used in string paths.
+	 * @return Returns the newly created {@linkplain IPathComponent path component} list.
 	 */
 	public static IPathComponentsList createList(PathSymbolsType symType) {
 		return getInstance().internal_createList(symType);
@@ -96,7 +99,8 @@ public abstract class FSUtils {
 	 * Constructs a list containing the elements of the specified path,
 	 * in the order they are returned by the collection's iterator.
 	 * 
-	 * @param orig The collection whose elements are to be placed into this list.
+	 * @param list The collection whose elements are to be placed into this list.
+	 * @return Returns the newly created {@linkplain IPathComponent path component} list.
 	 * 
 	 * @throws NullPointerException If the specified collection is null.
 	 */
