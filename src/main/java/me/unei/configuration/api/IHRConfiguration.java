@@ -26,7 +26,7 @@ public interface IHRConfiguration extends IConfiguration {
 	 * configuration, appointed for being saved inside a file
 	 * and without indication on whether it should be formatted
 	 * or minimized.
-	 *
+	 * <p>
 	 * Usually, will be the formatted version to allow humans
 	 * to read the contents of the file easily, but might be
 	 * a minimized version or even one between both.
@@ -38,7 +38,7 @@ public interface IHRConfiguration extends IConfiguration {
 	/**
 	 * Reads the required data from the specified string.
 	 *
-	 * The string can be the result of the <tt>saveToString</tt>,
+	 * The string can be the result of <tt>saveToString</tt>,
 	 * <tt>toFormattedString</tt> or <tt>toMinimizedString</tt>,
 	 * or can come from any other source provided that its format
 	 * is correct and readable by a computer.

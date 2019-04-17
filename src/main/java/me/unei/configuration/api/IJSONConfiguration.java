@@ -4,6 +4,8 @@ public interface IJSONConfiguration extends IHRConfiguration {
 
     /**
      * Returns this configuration's JSON representation as text.
+     * <p>
+     * {@inheritDoc}
      *
      * @return this configuration's JSON representation
      */
@@ -11,6 +13,8 @@ public interface IJSONConfiguration extends IHRConfiguration {
 
     /**
      * Loads the provided JSON data into this JSONConfig.
+     * <p>
+     * {@inheritDoc}
      *
      * @param data The JSON data as text
      */

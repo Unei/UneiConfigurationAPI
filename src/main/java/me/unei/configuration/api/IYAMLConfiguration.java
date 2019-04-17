@@ -4,6 +4,8 @@ public interface IYAMLConfiguration extends IHRConfiguration {
 
     /**
      * Returns this configuration's YAML representation as text.
+     * <p>
+     * {@inheritDoc}
      *
      * @return this configuration's YAML representation
      */
@@ -11,6 +13,8 @@ public interface IYAMLConfiguration extends IHRConfiguration {
 
     /**
      * Loads the provided YAML data into this YAMLConfig.
+     * <p>
+     * {@inheritDoc}
      *
      * @param data The YAML data as text
      */
