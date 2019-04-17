@@ -18,6 +18,21 @@ public abstract class UneiConfiguration implements IBasicPlugin
 		return Instance;
 	}
 	
+	public static UneiConfiguration tryInstanciate()
+	{
+		try
+		{
+			Class<?> clz = Class.forName("me.unei.configuration.plugin.UneiConfiguration");
+			if (clz != null)
+			{
+				clz.getDeclaredMethod("getInstance").invoke(null);
+			}
+		}
+		catch (Exception ignored)
+		{ }
+		return getInstance();
+	}
+	
 	public abstract IUpdater getUpdater();
 	
 	public abstract IUpdater.Result checkVersion();

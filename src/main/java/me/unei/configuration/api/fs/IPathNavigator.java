@@ -10,45 +10,45 @@ import me.unei.configuration.api.fs.IPathComponent.IPathComponentsList;
  * @param <T> The section type.
  */
 public interface IPathNavigator<T extends NavigableFile> {
-	
+
 	/**
 	 * Navigate to the root section.
 	 */
 	public void goToRoot();
-	
+
 	/**
 	 * Navigate to the parent section.
 	 */
 	public void goToParent();
-	
+
 	/**
 	 * Navigate to the `name` child section.
 	 * 
 	 * @param name The name of the child section to go to.
 	 */
 	public void goToChild(String name);
-	
+
 	/**
 	 * Navigate to the `index` element section.
 	 * 
 	 * @param index The index of the child section to go to.
 	 */
 	public void goToIndex(int index);
-	
+
 	/**
 	 * Gets the current path.
 	 * 
 	 * @return Returns the path as a string.
 	 */
 	public String getCurrentPath();
-	
+
 	/**
 	 * Gets the current section.
 	 * 
 	 * @return Returns the actual node.
 	 */
 	public T getCurrentNode();
-	
+
 	/**
 	 * Navigate following the given path and execute an action on each nodes.
 	 * 
@@ -58,7 +58,7 @@ public interface IPathNavigator<T extends NavigableFile> {
 	 * @throws NullPointerException If the `action` parameter is null.
 	 */
 	public void followAndApply(IPathComponentsList path, Consumer<T> action);
-	
+
 	/**
 	 * Navigate following the given `path`.
 	 * 
@@ -68,7 +68,7 @@ public interface IPathNavigator<T extends NavigableFile> {
 	 * @see #navigate(String, PathSymbolsType)
 	 */
 	public boolean followPath(IPathComponentsList path);
-	
+
 	/**
 	 * Navigate following the given `path`.
 	 * 
@@ -79,7 +79,7 @@ public interface IPathNavigator<T extends NavigableFile> {
 	 * @see #followPath(PathComponentsList)
 	 */
 	public boolean navigate(String path, PathSymbolsType type);
-	
+
 	/**
 	 * Represents the different types of symbols used in string paths.
 	 */
@@ -88,45 +88,48 @@ public interface IPathNavigator<T extends NavigableFile> {
 		 * The default Bukkit path symbols type.
 		 * 
 		 * <ul>
-		 * <li>Escape char:    '\'</li>
-		 * <li>Separator char: '.'</li>
-		 * <li>Root char:      '.'</li>
-		 * <li>Parent string:  '..'</li>
-		 * <li>Index prefix:    '['</li>
-		 * <li>Index suffix:    ']'</li>
+		 * <li>Escape char: &nbsp; &nbsp; &nbsp; 			<tt>'\'</tt></li>
+		 * <li>Separator char:&nbsp;						<tt>'.'</tt></li>
+		 * <li>Root char: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<tt>'.'</tt></li>
+		 * <li>Parent string: &nbsp; &nbsp; 				<tt>'..'</tt></li>
+		 * <li>Index prefix: &nbsp; &nbsp; &nbsp; 			<tt>'['</tt></li>
+		 * <li>Index suffix: &nbsp; &nbsp; &nbsp;&nbsp; 	<tt>']'</tt></li>
 		 * </ul>
 		 */
-		BUKKIT('\\', '.', '.', "..", '[', ']'),
+		BUKKIT('\\', '.', '.', "..", '[', ']', false),
 		/**
 		 * The default Unix path symbols type.
 		 * 
 		 * <ul>
-		 * <li>Escape char:    '\'</li>
-		 * <li>Separator char: '/'</li>
-		 * <li>Root char:      '/'</li>
-		 * <li>Parent string:  '..'</li>
-		 * <li>Index prefix:    '['</li>
-		 * <li>Index suffix:    ']'</li>
+		 * <li>Escape char: &nbsp; &nbsp; &nbsp; 			<tt>'\'</tt></li>
+		 * <li>Separator char:&nbsp;						<tt>'/'</tt></li>
+		 * <li>Root char: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<tt>'/'</tt></li>
+		 * <li>Parent string: &nbsp; &nbsp; 				<tt>'..'</tt></li>
+		 * <li>Index prefix: &nbsp; &nbsp; &nbsp; 			<tt>'['</tt></li>
+		 * <li>Index suffix: &nbsp; &nbsp; &nbsp;&nbsp; 	<tt>']'</tt></li>
 		 * </ul>
 		 */
-		UNIX('\\', '/', '/', "..", '[', ']');
-		
+		UNIX('\\', '/', '/', "..", '[', ']', true);
+
 		public final char escape;
 		public final char separator;
 		public final char root;
 		public final String parent;
 		public final char indexerPrefix;
 		public final char indexerSuffix;
-		
-		private PathSymbolsType(char p_escape, char p_separator, char p_root, String p_parent, char idxPre, char idxSuf) {
+
+		public final boolean wrapParent;
+
+		private PathSymbolsType(char p_escape, char p_separator, char p_root, String p_parent, char idxPre, char idxSuf, boolean wParent) {
 			this.escape = p_escape;
 			this.separator = p_separator;
 			this.root = p_root;
 			this.parent = p_parent;
 			this.indexerPrefix = idxPre;
 			this.indexerSuffix = idxSuf;
+			this.wrapParent = wParent;
 		}
-		
+
 		/**
 		 * Try to detect the type of symbols used in the given 'apath'.
 		 * 
