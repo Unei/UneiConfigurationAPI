@@ -39,7 +39,7 @@ public interface IPathComponent {
 	/**
 	 * Gets the component {@link Key} (index or value depending of the type).
 	 * 
-	 * @param indice An hint for the key to select, pass <tt>null</tt> to use the {@linkplain PathComponent} type.
+	 * @param indice An hint for the key to select, pass <tt>null</tt> to use the {@linkplain IPathComponent} type.
 	 * @return Returns the best found, or <tt>null</tt> if type is neither Child nor Index.
 	 */
 	public Key getKey(StorageType indice);
@@ -66,7 +66,7 @@ public interface IPathComponent {
 		/**
 		 * Appends a component of the specified type and with the given name.
 		 * 
-		 * @see PathComponent#PathComponent(PathComponentType, String)
+		 * @see FSUtils#createComponent(PathComponentType, String)
 		 * 
 		 * @param type The type of the component.
 		 * @param value The name of the component.
@@ -152,6 +152,8 @@ public interface IPathComponent {
 
 		/**
 		 * Clone this path components to another list.
+		 * 
+		 * @return Returns a cloned list of this.
 		 */
 		public IPathComponentsList clone();
 	}

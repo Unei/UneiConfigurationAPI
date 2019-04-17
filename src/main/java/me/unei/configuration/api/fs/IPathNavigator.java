@@ -76,7 +76,7 @@ public interface IPathNavigator<T extends NavigableFile> {
 	 * @param type The types of the symbols used in the path.
 	 * @return Returns `true` if navigation was successful, `false` otherwise.
 	 * 
-	 * @see #followPath(PathComponentsList)
+	 * @see #followPath(IPathComponentsList)
 	 */
 	public boolean navigate(String path, PathSymbolsType type);
 

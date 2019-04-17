@@ -8,9 +8,9 @@ public interface IBasicPlugin {
 
     /**
      * Returns the folder that the plugin data's files are located in. The folder may not yet exist.
-     *
-     * @see org.bukkit.plugin.Plugin#getDataFolder()
-     * @see net.md_5.bungee.api.plugin.Plugin#getDataFolder()
+     * <p>
+     * See <tt>org.bukkit.plugin.Plugin#getDataFolder()</tt> within Bukkit<br>
+     * See <tt>net.md_5.bungee.api.plugin.Plugin#getDataFolder()</tt> within BungeeCord API
      *
      * @return the data folder of this plugin
      */
@@ -18,9 +18,9 @@ public interface IBasicPlugin {
 
     /**
      * Returns the plugin logger associated with this server's logger. The returned logger automatically tags all log messages with the plugin's name.
-     *
-     * @see org.bukkit.plugin.Plugin#getLogger()
-     * @see net.md_5.bungee.api.plugin.Plugin#getLogger()
+     * <p>
+     * See <tt>org.bukkit.plugin.Plugin#getLogger()</tt> within Bukkit<br>
+     * See <tt>net.md_5.bungee.api.plugin.Plugin#getLogger()</tt> within BungeeCord API
      *
      * @return Logger associated with this plugin
      */
@@ -29,9 +29,9 @@ public interface IBasicPlugin {
     /**
      * Gets an embedded resource in this plugin, within the jar or container.
      * Care must be taken to close the returned stream.
-     *
-     * @see org.bukkit.plugin.Plugin#getResource(String)
-     * @see net.md_5.bungee.api.plugin.Plugin#getResourceAsStream(String)
+     * <p>
+     * See <tt>org.bukkit.plugin.Plugin#getResource(String)</tt> within Bukkit<br>
+     * See <tt>net.md_5.bungee.api.plugin.Plugin#getResourceAsStream(String)</tt> within BungeeCord API
      *
      * @param path the full path name of this resource
      *
