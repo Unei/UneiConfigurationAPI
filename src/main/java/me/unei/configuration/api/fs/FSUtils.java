@@ -1,11 +1,11 @@
 package me.unei.configuration.api.fs;
 
+import me.unei.configuration.StaticInstance;
+import me.unei.configuration.StaticInstance.StaticInstanceExposer;
 import me.unei.configuration.api.fs.IPathComponent.IPathComponentsList;
 import me.unei.configuration.api.fs.IPathNavigator.PathSymbolsType;
 
 public abstract class FSUtils {
-
-	private static FSUtils Instance;
 
 	protected abstract IPathComponentsList internal_parsePath(String path, PathSymbolsType type);
 	protected abstract IPathComponentsList internal_cleanPath(IPathComponentsList path);
@@ -16,16 +16,32 @@ public abstract class FSUtils {
 	protected abstract IPathComponentsList internal_createList(IPathComponentsList list);
 
 	protected void setInstance() {
-		if (Instance == null) {
-			Instance = this;
+		if (Instance.isEmpty()) {
+			Instance.set(this);
 		}
 	}
 
 	private static FSUtils getInstance() {
-		if (Instance != null) {
-			return Instance;
+		if (!Instance.isEmpty()) {
+			return Instance.get();
+		}
+		Instance.callBuilder();
+		if (!Instance.isEmpty()) {
+			return Instance.get();
 		}
 		throw new IllegalStateException("FSUtils is not yet inialized");
+	}
+	
+	private static final StaticInstance<FSUtils> Instance = new StaticInstance<>();
+	public static final StaticInstanceExposer<FSUtils> INSTANCE = new StaticInstanceExposer<>(Instance, true);
+	
+	static
+	{
+		try {
+			Instance.setConstructor(Class.forName("me.unei.configuration.api.fs.FSUtilsImpl"), "init");
+		} catch (ClassNotFoundException e) {
+			;
+		}
 	}
 
 	/**

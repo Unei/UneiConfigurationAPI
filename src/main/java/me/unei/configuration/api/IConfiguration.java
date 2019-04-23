@@ -29,6 +29,18 @@ public interface IConfiguration extends IFlatConfiguration, NavigableFile {
      * @return the direct child element with the specified name as an {@link IConfiguration IConfiguration}
      */
     public IConfiguration getChild(String name);
+    
+    /**
+     * Returns the direct child element of this configuration at the
+     * specified index, as an {@link IConfiguration IConfiguration}.
+     * <p>
+     * Only works when this section is acting as a list, the behavior
+     * of this method is undefined otherwise.
+     *
+     * @param index the index of the child to retrieve
+     * @return the direct child element at the specified index as an {@link IConfiguration IConfiguration}
+     */
+    public IConfiguration getAt(int index);
 
     /**
      * Returns the name of this configuration section.

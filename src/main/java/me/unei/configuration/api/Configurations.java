@@ -3,6 +3,8 @@ package me.unei.configuration.api;
 import java.io.File;
 
 import me.unei.configuration.SavedFile;
+import me.unei.configuration.StaticInstance;
+import me.unei.configuration.StaticInstance.StaticInstanceExposer;
 import me.unei.configuration.api.fs.IPathNavigator.PathSymbolsType;
 
 /**
@@ -192,19 +194,33 @@ public abstract class Configurations {
 		
 		protected abstract IFlatMySQLConfiguration internal_newFlatMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
 		
-		private static FlatConfigurations Instance;
-		
 		protected final void setInstance() {
-			if (Instance == null) {
-				Instance = this;
+			if (Instance.isEmpty()) {
+				Instance.set(this);
 			}
 		}
 		
 		private static FlatConfigurations instance() {
-			if (Instance != null) {
-				return Instance;
+			if (!Instance.isEmpty()) {
+				return Instance.get();
+			}
+			Instance.callBuilder();
+			if (!Instance.isEmpty()) {
+				return Instance.get();
 			}
 			throw new IllegalStateException("UneiConfiguration has yet to be enabled");
+		}
+		
+		private static final StaticInstance<FlatConfigurations> Instance = new StaticInstance<>();
+		public static final StaticInstanceExposer<FlatConfigurations> INSTANCE = new StaticInstanceExposer<>(Instance, true);
+		
+		static
+		{
+			try {
+				Instance.setConstructor(Class.forName("me.unei.configuration.api.ConfigurationsImpl.FlatConfigurationsImpl"), "init");
+			} catch (ClassNotFoundException e) {
+				;
+			}
 		}
 	}
 	
@@ -535,18 +551,32 @@ public abstract class Configurations {
 		}
 	}
 	
-	private static Configurations Instance;
-	
 	protected final void setInstance() {
-		if (Instance == null) {
-			Instance = this;
+		if (Instance.isEmpty()) {
+			Instance.set(this);
 		}
 	}
 	
 	private static Configurations instance() {
-		if (Instance != null) {
-			return Instance;
+		if (!Instance.isEmpty()) {
+			return Instance.get();
+		}
+		Instance.callBuilder();
+		if (!Instance.isEmpty()) {
+			return Instance.get();
 		}
 		throw new IllegalStateException("UneiConfiguration has yet to be initialized");
+	}
+	
+	private static final StaticInstance<Configurations> Instance = new StaticInstance<>();
+	public static final StaticInstanceExposer<Configurations> INSTANCE = new StaticInstanceExposer<>(Instance, true);
+	
+	static
+	{
+		try {
+			Instance.setConstructor(Class.forName("me.unei.configuration.api.ConfigurationsImpl"), "init");
+		} catch (ClassNotFoundException e) {
+			;
+		}
 	}
 }

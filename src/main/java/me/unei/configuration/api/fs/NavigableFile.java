@@ -46,4 +46,14 @@ public interface NavigableFile {
      * @return this navigable file's child with the provided name
      */
     public NavigableFile getChild(String name);
+
+    /**
+     * Returns the child of this navigable file at the
+     * provided index, or <tt>null</tt> if it doesn't exist
+     * and if it can't be created.
+     *
+     * @param index The index of the child to return
+     * @return this navigable file's child at the provided index
+     */
+    public NavigableFile getAt(int index);
 }
