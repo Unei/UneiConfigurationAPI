@@ -34,6 +34,17 @@ public abstract class UneiConfiguration implements IBasicPlugin
 	}
 	
 	/**
+	 * Sends the given name at BStats.
+	 * <p>
+	 * The name should be the name of the plugin using UneiConfiguration.
+	 * <p>
+	 * This is purely optional, it's mainly to see how many plugin is using our API.
+	 * 
+	 * @param name The name of the plugin depending on UneiConfiguration.
+	 */
+	public abstract void registerMyNameInBStats(String name);
+	
+	/**
 	 * Try to load the UneiConfiguration implementation forcefully (useful when using it in stand-alone mode).
 	 * 
 	 * @return Returns this API instance if loaded successfully.
