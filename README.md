@@ -6,4 +6,6 @@ Allows developpers to easily read, create and manage configurations in almost an
 ## UneiConfiguration recommended version :
 for UneiConfigurationAPI v 1.2 : UneiConfiguration v 1.2.8
 
-## TODO: Readme :p
+## TODO:
+* Fill the README.md correctly
+* Setting up a *real* versionning model.

@@ -3,6 +3,12 @@ package me.unei.configuration.api.format;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.unei.configuration.StaticInstance;
+import me.unei.configuration.StaticInstance.StaticInstanceExposer;
+
+/**
+ * Used to determine a type of a NBT tag. 
+ */
 public enum TagType
 {
 	TAG_End(0, "TAG_End"),
@@ -49,23 +55,100 @@ public enum TagType
 		this.tagName = name;
 	}
 
+	/**
+	 * Gets the ID of this type.
+	 * <p>
+	 * Prefer not using it if there is another possibility.
+	 * 
+	 * @return the ID of the NBT tag.
+	 */
 	public byte getId()
 	{
 		return this.tagId;
 	}
 	
+	/**
+	 * Returns <tt>true</tt> whenever tag of this types are containing numbers.
+	 * 
+	 * @return <tt>true</tt> whenever tag of this types are containing numbers
+	 */
 	public boolean isNumberTag()
 	{
 		return this.isNumber;
 	}
 	
+	/**
+	 * Gets the name of the tag.
+	 * 
+	 * @return the name of the tag
+	 */
 	public String getTagName()
 	{
 		return this.tagName;
 	}
 	
+	/**
+	 * Create a new instance of this tag if it can be externally created.
+	 * <p>
+	 * For instance: a string or an integer tag cannot be created.<br>
+	 * On the contrary, a Compound or a List tag can be created.
+	 * 
+	 * @return The newly created tag, or <tt>null</tt> if it cannot be build.
+	 * 
+	 * @throws IllegalStateException if the plugin is not fully loaded and the
+	 * implementation of this method is not (yet ?) available.
+	 */
+	public INBTTag newInstance()
+	{
+		return instance().internal_createTag(this);
+	}
+	
+	/**
+	 * Get a tag by it's ID.
+	 * 
+	 * @see #getId()
+	 * 
+	 * @param type the ID of the type.
+	 * @return the type if found, <tt>null</tt> otherwise.
+	 */
 	public static TagType getByTypeId(byte type)
 	{
 		return BY_ID.get(Byte.valueOf(type));
+	}
+	
+	private static final StaticInstance<ATagCreator> Instance = new StaticInstance<>();
+	public static final StaticInstanceExposer<ATagCreator> INSTANCE = new StaticInstanceExposer<>(Instance, false);
+	
+	static
+	{
+		try {
+			Instance.setConstructor(Class.forName("me.unei.configuration.formats.nbtlib.TagCreatorImpl"), "init");
+		} catch (ClassNotFoundException e) {
+			;
+		}
+	}
+	
+	private static ATagCreator instance() {
+		if (!Instance.isEmpty()) {
+			return Instance.get();
+		}
+		Instance.callBuilder();
+		if (!Instance.isEmpty()) {
+			return Instance.get();
+		}
+		throw new IllegalStateException("TagCreator has yet to be enabled");
+	}
+	
+	public static abstract class ATagCreator
+	{
+		protected final void setInstance() {
+			if (Instance.isEmpty()) {
+				Instance.set(this);
+			}
+		}
+		
+		protected abstract INBTTag internal_createTag(TagType type);
+		protected INBTCompound internal_createCompound() { return (INBTCompound) internal_createTag(TAG_Compound); }
+		protected INBTList internal_createList() { return (INBTList) internal_createTag(TAG_List); }
 	}
 }
