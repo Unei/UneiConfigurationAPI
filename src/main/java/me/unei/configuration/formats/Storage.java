@@ -5,14 +5,41 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Represent a raw storage element (could be a {@link java.util.HashMap HashMap} or any other object).
+ * 
+ * @author JësFot
+ * @since 1.2.8
+ * @version 1.2.0
+ * @param <V> the type of elements returned by the storage.
+ */
 public interface Storage<V> extends Iterable<V>
 {
+	/**
+	 * Gets the type of the storage being implemented.
+	 * 
+	 * @return this storage type.
+	 */
 	public StorageType getStorageType();
 
+    /**
+     * Returns the number of elements in this storage.
+     *
+     * @return the number of element in this storage
+     */
 	public int size();
 
+    /**
+     * Returns <tt>true</tt> if this storage contains no elements.
+     *
+     * @return <tt>true</tt> if this storage contains no elements
+     */
 	public boolean isEmpty();
 
+    /**
+     * Removes all of the elements from this storage.
+     * The storage will be empty after this call returns.
+     */
 	public void clear();
 
 	public V get(Key key);

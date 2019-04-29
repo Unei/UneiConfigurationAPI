@@ -5,8 +5,13 @@ import me.unei.configuration.StaticInstance.StaticInstanceExposer;
 import me.unei.configuration.api.fs.IPathComponent.IPathComponentsList;
 import me.unei.configuration.api.fs.IPathNavigator.PathSymbolsType;
 
+/**
+ * Utilities used within the file-system realm.
+ */
 public abstract class FSUtils {
 
+	// Methods implementations
+	
 	protected abstract IPathComponentsList internal_parsePath(String path, PathSymbolsType type);
 	protected abstract IPathComponentsList internal_cleanPath(IPathComponentsList path);
 	protected abstract String internal_escapeComponent(String component, PathSymbolsType symType);
