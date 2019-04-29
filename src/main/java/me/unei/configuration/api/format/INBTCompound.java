@@ -142,10 +142,23 @@ public interface INBTCompound extends INBTTag {
      * Returns the type as byte of the child element of this tag
      * which has the specified key as name.
      *
+     * @deprecated Magic value. prefer using {@link #getTypeOfTag(String)}.
      * @param key the name of the child from which to retrieve the type
      * @return the type as byte of the direct child element with the specified name
      */
+    @Deprecated
     public byte getTypeOf(String key);
+    
+    /**
+     * Returns the tag type of the child element of this tag
+     * which has the specified key as name.
+     *
+     * @param key the name of the child from which to retrieve the type
+     * @return the tag type of the direct child element with the specified name
+     */
+    public default TagType getTypeOfTag(String key) {
+    	return TagType.getByTypeId(getTypeOf(key));
+    }
 
     /**
      * Returns <tt>true</tt> if this tag contains a direct child with
@@ -268,11 +281,25 @@ public interface INBTCompound extends INBTTag {
      * Returns the direct child element of this tag which has
      * the specified key as name as an {@link INBTList INBTList}, if possible.
      *
+     * @deprecated Magic value of type. Prefer using {@link #getList(String, TagType)}.
      * @param key the name of the child to retrieve
      * @param type the type of the elements of the list to retrieve
      * @return the direct child element with the specified name as an {@link INBTList INBTList}
      */
+    @Deprecated
     public INBTList getList(String key, byte type);
+
+    /**
+     * Returns the direct child element of this tag which has
+     * the specified key as name as an {@link INBTList INBTList}, if possible.
+     *
+     * @param key the name of the child to retrieve
+     * @param type the type of the elements of the list to retrieve
+     * @return the direct child element with the specified name as an {@link INBTList INBTList}
+     */
+    public default INBTList getList(String key, TagType type) {
+    	return getList(key, type.getId());
+    }
 
     /**
      * Removes any direct child element of this tag which has
@@ -281,4 +308,10 @@ public interface INBTCompound extends INBTTag {
      * @param key the name of the child to remove
      */
     public void remove(String key);
+
+    /**
+     * Removes all of the mappings from this tag.
+     * The tag will be empty after this call returns.
+     */
+    public void clear();
 }

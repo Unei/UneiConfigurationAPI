@@ -8,9 +8,20 @@ public interface INBTList extends INBTTag {
     /**
      * Returns the type as byte of the elements contained in this list.
      *
+     * @deprecated Magic value. prefer using {@link #getTagType()}.
      * @return the type as byte of the elements contained in this list
      */
-    public byte getTagType();
+	@Deprecated
+    public byte getTagTypeId();
+
+    /**
+     * Returns the type of the elements contained in this list.
+     *
+     * @return the type of the elements contained in this list
+     */
+	public default TagType getTagType() {
+		return TagType.getByTypeId(getTagTypeId());
+	}
 
     /**
      * Adds the specified element at the end of this list.
@@ -235,11 +246,25 @@ public interface INBTList extends INBTTag {
      * Returns the direct child element of this tag at
      * the specified index as an {@link INBTList INBTList}, if possible.
      *
+     * @deprecated Magic value of type. Prefer using {@link #getList(int, TagType)}.
      * @param idx the index of the element to retrieve
      * @param type the type of the elements of the list to retrieve
      * @return the direct child element with the specified index as an {@link INBTList INBTList}
      */
+    @Deprecated
     public INBTList getList(int idx, byte type);
+
+    /**
+     * Returns the direct child element of this tag at
+     * the specified index as an {@link INBTList INBTList}, if possible.
+     *
+     * @param idx the index of the element to retrieve
+     * @param type the type of the elements of the list to retrieve
+     * @return the direct child element with the specified index as an {@link INBTList INBTList}
+     */
+    public default INBTList getList(int idx, TagType type) {
+    	return getList(idx, type.getId());
+    }
 
     /**
      * Removes the element at the specified index in this list.
@@ -256,4 +281,10 @@ public interface INBTList extends INBTTag {
      * @return the number of elements contained in this list
      */
     public int size();
+
+    /**
+     * Removes all of the mappings from this list.
+     * The list will be empty after this call returns.
+     */
+    public void clear();
 }
