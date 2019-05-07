@@ -9,17 +9,17 @@ package me.unei.configuration.formats;
 public enum StorageType
 {
 	/**
-	 * The storage is a mapping (key -> value) using a {@linkplain String} as a key.
+	 * The storage is a mapping (key -&gt; value) using a {@linkplain String} as a key.
 	 */
 	MAP,
 	/**
-	 * The storage is an ordered list (index -> value).
+	 * The storage is an ordered list (index -&gt; value).
 	 */
 	LIST,
 	/**
 	 * The storage is a list in which indexes are not necessarily following each others.
 	 * <p>
-	 * Implementation proposition : A mapping (key -> value) using {@linkplain Integer} as keys.
+	 * Implementation proposition : A mapping (key -&gt; value) using {@linkplain Integer} as keys.
 	 */
 	DISCONTINUED_LIST,
 	/**
