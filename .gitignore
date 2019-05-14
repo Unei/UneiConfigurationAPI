@@ -1,5 +1,8 @@
 ### Custom.gitignore ###
 
+# javadoc generated files
+javadoc-*/
+
 # IntelliJ files
 *.eml
 *.iml
