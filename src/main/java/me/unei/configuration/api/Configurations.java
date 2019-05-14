@@ -134,47 +134,43 @@ public abstract class Configurations {
 	 */
 	public static abstract class FlatConfigurations
 	{
+		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(File folder, String fileName);
+		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(SavedFile file);
+		protected abstract IFlatCSVConfiguration internal_newCSVConfig(SavedFile file);
+		protected abstract IFlatCSVConfiguration internal_newCSVConfig(File folder, String fileName);
+		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(SavedFile file, String tableName);
+		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(File folder, String fileName, String tableName);
+		protected abstract IFlatMySQLConfiguration internal_newFlatMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
+		
 		public static IFlatPropertiesConfiguration newPropertiesConfig(SavedFile file)
 		{
 			return instance().internal_newPropertiesConfig(file);
 		}
-		
-		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(SavedFile file);
 
 		public static IFlatPropertiesConfiguration newPropertiesConfig(File folder, String fileName)
 		{
 			return instance().internal_newPropertiesConfig(folder, fileName);
 		}
-		
-		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(File folder, String fileName);
 
 		public static IFlatCSVConfiguration newCSVConfig(SavedFile file)
 		{
 			return instance().internal_newCSVConfig(file);
 		}
-		
-		protected abstract IFlatCSVConfiguration internal_newCSVConfig(SavedFile file);
 
 		public static IFlatCSVConfiguration newCSVConfig(File folder, String fileName)
 		{
 			return instance().internal_newCSVConfig(folder, fileName);
 		}
-		
-		protected abstract IFlatCSVConfiguration internal_newCSVConfig(File folder, String fileName);
 
 		public static IFlatSQLiteConfiguration newFlatSQLiteConfig(SavedFile file, String tableName)
 		{
 			return instance().internal_newFlatSQLiteConfig(file, tableName);
 		}
-		
-		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(SavedFile file, String tableName);
 
 		public static IFlatSQLiteConfiguration newFlatSQLiteConfig(File folder, String fileName, String tableName)
 		{
 			return instance().internal_newFlatSQLiteConfig(folder, fileName, tableName);
 		}
-		
-		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(File folder, String fileName, String tableName);
 
 		/**
 		 * Create a new Flat MySQL configuration link instance.
@@ -191,8 +187,6 @@ public abstract class Configurations {
 		{
 			return instance().internal_newFlatMySQLConfig(host, port, base, user, pass, tableName);
 		}
-		
-		protected abstract IFlatMySQLConfiguration internal_newFlatMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
 		
 		protected final void setInstance() {
 			if (Instance.isEmpty()) {
