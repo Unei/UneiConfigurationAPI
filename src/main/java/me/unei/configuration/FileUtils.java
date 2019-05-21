@@ -9,12 +9,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemLoopException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 
 /**
  * Simplifies {@link java.io.File file} management.
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * @since 0.0.0
  */
 public final class FileUtils {
@@ -119,5 +126,61 @@ public final class FileUtils {
             UneiConfiguration.getInstance().getLogger().fine("Successfully created file.");
         }
         return true;
+    }
+    
+    public static boolean copyDirs(File source, File destination) {
+    	CopyFileVisitor cfv = new CopyFileVisitor(source.toPath(), destination.toPath());
+    	try {
+			Files.walkFileTree(source.toPath(), cfv);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+    }
+    
+    private static class CopyFileVisitor extends SimpleFileVisitor<Path> {
+        private final Path source;
+        private final Path target;
+
+        public CopyFileVisitor(Path source, Path target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            Path newDirectory= target.resolve(source.relativize(dir));
+            try {
+                Files.copy(dir, newDirectory);
+            } catch (FileAlreadyExistsException ioException) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+           Path newFile = target.resolve(source.relativize(file));
+            try {
+                Files.copy(file, newFile);
+            } catch (IOException ioException) {
+            }
+            return FileVisitResult.CONTINUE;
+
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) {
+            if (exc instanceof FileSystemLoopException) {
+            	return FileVisitResult.SKIP_SUBTREE;
+            } else {
+                return FileVisitResult.CONTINUE;
+            }
+        }
     }
 }
