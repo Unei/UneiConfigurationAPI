@@ -5,6 +5,7 @@ import java.io.File;
 import me.unei.configuration.SavedFile;
 import me.unei.configuration.StaticInstance;
 import me.unei.configuration.StaticInstance.StaticInstanceExposer;
+import me.unei.configuration.api.Configurations.ConfigurationType.ConfigurationTypeCls;
 import me.unei.configuration.api.fs.IPathNavigator.PathSymbolsType;
 
 /**
@@ -124,6 +125,62 @@ public abstract class Configurations {
 				return null;
 			}
 			return ConfigurationType.values()[ord];
+		}
+		
+		public static class ConfigurationTypeCls<T extends IFlatConfiguration>
+		{
+			public static final ConfigurationTypeCls<INBTConfiguration>  NBT_CONFIG = new ConfigurationTypeCls<>(NBT, INBTConfiguration.class);
+			public static final ConfigurationTypeCls<IConfiguration> BINARY_CONFIG = new ConfigurationTypeCls<>(Binary, IConfiguration.class);
+			public static final ConfigurationTypeCls<IYAMLConfiguration> YAML_CONFIG = new ConfigurationTypeCls<>(YAML, IYAMLConfiguration.class);
+			public static final ConfigurationTypeCls<IJSONConfiguration> JSON_CONFIG = new ConfigurationTypeCls<>(JSON, IJSONConfiguration.class);
+			public static final ConfigurationTypeCls<ISQLiteConfiguration> SQLITE_CONFIG = new ConfigurationTypeCls<>(SQLite, ISQLiteConfiguration.class);
+			public static final ConfigurationTypeCls<IMySQLConfiguration> MYSQL_CONFIG = new ConfigurationTypeCls<>(MySQL, IMySQLConfiguration.class);
+			
+			public static final ConfigurationTypeCls<IFlatPropertiesConfiguration> PROPERTIES_CONFIG = new ConfigurationTypeCls<>(Properties, IFlatPropertiesConfiguration.class);
+			public static final ConfigurationTypeCls<IFlatCSVConfiguration> CSV_CONFIG = new ConfigurationTypeCls<>(CSV, IFlatCSVConfiguration.class);
+			public static final ConfigurationTypeCls<IFlatMySQLConfiguration> FLAT_MYSQL_CONFIG = new ConfigurationTypeCls<>(FlatMySQL, IFlatMySQLConfiguration.class);
+			public static final ConfigurationTypeCls<IFlatSQLiteConfiguration> FLAT_SQLITE_CONFIG = new ConfigurationTypeCls<>(FlatSQLite, IFlatSQLiteConfiguration.class);
+			
+			
+			private final ConfigurationType type;
+			private final Class<T> clazz;
+			
+			private ConfigurationTypeCls(ConfigurationType type, Class<T> clazz)
+			{
+				this.type = type;
+				this.clazz = clazz;
+			}
+			
+			public ConfigurationType getType()
+			{
+				return this.type;
+			}
+			
+			public boolean isType(Object cfg)
+			{
+				if (cfg != null)
+				{
+					return this.clazz.isAssignableFrom(cfg.getClass());
+				}
+				return false;
+			}
+			
+			@SuppressWarnings("unchecked")
+			public T safeCast(IFlatConfiguration ifc)
+			{
+				if (!this.isType(ifc))
+				{
+					return null;
+				}
+				try
+				{
+					return (T) ifc;
+				}
+				catch (Throwable t)
+				{
+					return null;
+				}
+			}
 		}
 	}
 	
@@ -508,6 +565,10 @@ public abstract class Configurations {
 			default:
 				return null;
 		}
+	}
+	
+	public static <T extends IFlatConfiguration> T newConfig(ConfigurationTypeCls<T> type, File folder, String fileName, String tableName) {
+		return type.safeCast(newConfig(type.getType(), folder, fileName, tableName));
 	}
 	
 	/**

@@ -7,6 +7,13 @@ import java.util.Map;
 
 public interface ISQLConfiguration extends Closeable {
 
+	/**
+	 * Gets the name of the table this section is in.
+	 * 
+	 * @return the name of the SQL table.
+	 */
+	public String getTableName();
+	
     /**
      * Attempts to reconnect to the remote database, or to reopen the file.
      *

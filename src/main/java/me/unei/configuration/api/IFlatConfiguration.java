@@ -3,10 +3,18 @@ package me.unei.configuration.api;
 import java.util.Set;
 
 import me.unei.configuration.SavedFile;
+import me.unei.configuration.api.Configurations.ConfigurationType;
 import me.unei.configuration.api.exceptions.FileFormatException;
 
 public interface IFlatConfiguration {
 
+	/**
+	 * Get the type of this configuration node instance.
+	 * 
+	 * @return this configuration's type.
+	 */
+	public ConfigurationType getConfigurationType();
+	
     /**
      * Returns the {@link SavedFile SavedFile} that represents this
      * configuration's file location.
