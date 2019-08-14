@@ -1,11 +1,12 @@
 package me.unei.configuration;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * An abstract representation of file.
  * 
- * @version 1.3.2
+ * @version 1.3.3
  * @since 0.0.0
  */
 public final class SavedFile {
@@ -61,11 +62,17 @@ public final class SavedFile {
     	if (file == null) {
     		throw new NullPointerException("file cannot be null");
     	}
-    	this.folder = file.getParentFile();
+    	File tmp = file;
+    	try {
+			tmp = file.getCanonicalFile();
+		} catch (IOException e) {
+			tmp = file;
+		}
+    	this.folder = tmp.getParentFile();
     	this.canAccess = false;
     	this.initialized = false;
-    	this.datFile = file;
-    	String name = file.getName();
+    	this.datFile = tmp;
+    	String name = tmp.getName();
     	if (!name.contains(".")) {
     		this.fileName = name;
     		this.extension = "";
