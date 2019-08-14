@@ -4,6 +4,7 @@ Allows developpers to easily read, create and manage configurations in almost an
 **See the BukkitDev page for more informations**: [https://dev.bukkit.org/projects/uneiconfiguration](https://dev.bukkit.org/projects/uneiconfiguration)
 
 ## UneiConfiguration recommended version :
+for UneiConfigurationAPI v 1.4 : UneiConfiguration v 1.4.0
 for UneiConfigurationAPI v 1.2 : UneiConfiguration v 1.2.8
 
 ## TODO:
