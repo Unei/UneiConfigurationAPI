@@ -30,7 +30,7 @@ public abstract class Configurations {
 	 * @see Configurations#newSubConfig(ConfigurationType, IConfiguration, String)
 	 */
 	public static enum ConfigurationType {
-		
+
 		/**
 		 * A Binary Configuration type.
 		 */
@@ -78,7 +78,12 @@ public abstract class Configurations {
 		/**
 		 * A YAML Configuration type. (Type used for CraftBukkit/Spigot/Forge/... configuration files).
 		 */
-		YAML("YAML");
+		YAML("YAML"),
+		/**
+		 * Any Configuration type that is not managed by UNEI Configuration.
+		 */
+		Other("Other", "Unknown")
+		;
 
 		private final String displayName;
 		private final String[] aliases;
@@ -106,6 +111,24 @@ public abstract class Configurations {
 			return this.aliases;
 		}
 
+		/**
+		 * Gets whenever this configuration type is about a flat structure.
+		 * 
+		 * @return Returns '{@code true}' if this is a flat configuration type, '{@code false}' otherwise. 
+		 */
+		public boolean isFlat() {
+			switch (this) {
+				case FlatMySQL:
+				case FlatSQLite:
+				case Properties:
+				case CSV:
+					return true;
+
+				default:
+					return false;
+			}
+		}
+
 		public static ConfigurationType getByName(String name) {
 			for (ConfigurationType type : ConfigurationType.values()) {
 				if (type.getDescription().equalsIgnoreCase(name) || type.name().equalsIgnoreCase(name)) {
@@ -126,64 +149,87 @@ public abstract class Configurations {
 			}
 			return ConfigurationType.values()[ord];
 		}
-		
-		public static class ConfigurationTypeCls<T extends IFlatConfiguration>
-		{
+
+		public static class ConfigurationTypeCls<T extends IFlatConfiguration> {
 			public static final ConfigurationTypeCls<INBTConfiguration>  NBT_CONFIG = new ConfigurationTypeCls<>(NBT, INBTConfiguration.class);
 			public static final ConfigurationTypeCls<IConfiguration> BINARY_CONFIG = new ConfigurationTypeCls<>(Binary, IConfiguration.class);
 			public static final ConfigurationTypeCls<IYAMLConfiguration> YAML_CONFIG = new ConfigurationTypeCls<>(YAML, IYAMLConfiguration.class);
 			public static final ConfigurationTypeCls<IJSONConfiguration> JSON_CONFIG = new ConfigurationTypeCls<>(JSON, IJSONConfiguration.class);
 			public static final ConfigurationTypeCls<ISQLiteConfiguration> SQLITE_CONFIG = new ConfigurationTypeCls<>(SQLite, ISQLiteConfiguration.class);
 			public static final ConfigurationTypeCls<IMySQLConfiguration> MYSQL_CONFIG = new ConfigurationTypeCls<>(MySQL, IMySQLConfiguration.class);
-			
+
 			public static final ConfigurationTypeCls<IFlatPropertiesConfiguration> PROPERTIES_CONFIG = new ConfigurationTypeCls<>(Properties, IFlatPropertiesConfiguration.class);
 			public static final ConfigurationTypeCls<IFlatCSVConfiguration> CSV_CONFIG = new ConfigurationTypeCls<>(CSV, IFlatCSVConfiguration.class);
 			public static final ConfigurationTypeCls<IFlatMySQLConfiguration> FLAT_MYSQL_CONFIG = new ConfigurationTypeCls<>(FlatMySQL, IFlatMySQLConfiguration.class);
 			public static final ConfigurationTypeCls<IFlatSQLiteConfiguration> FLAT_SQLITE_CONFIG = new ConfigurationTypeCls<>(FlatSQLite, IFlatSQLiteConfiguration.class);
-			
-			
+
+
 			private final ConfigurationType type;
 			private final Class<T> clazz;
-			
-			private ConfigurationTypeCls(ConfigurationType type, Class<T> clazz)
-			{
+
+			private ConfigurationTypeCls(ConfigurationType type, Class<T> clazz) {
 				this.type = type;
 				this.clazz = clazz;
 			}
 			
-			public ConfigurationType getType()
-			{
+			public ConfigurationTypeCls(Class<T> clazz) {
+				this(ConfigurationType.Other, clazz);
+			}
+
+			/**
+			 * Gets the type (as enum value) of this configuration type
+			 * representation. Should be {@link ConfigurationType#Other}
+			 * for any external implementations.
+			 * 
+			 * @return the implemented configuration type.
+			 */
+			public ConfigurationType getType() {
 				return this.type;
 			}
 			
-			public boolean isType(Object cfg)
-			{
-				if (cfg != null)
-				{
+			/**
+			 * For external implementation of configuration types,
+			 * build a new configuration instance with provided informations.
+			 * 
+			 * @param file the representation of the configuration file.
+			 * @param path the path within the configuration (non-flat), may be null.
+			 * @return Returns the new configuration instance, may return null.
+			 */
+			protected T buildNew(SavedFile file, String path) {
+				return null;
+			}
+			
+			/**
+			 * For external implementation of configuration types,
+			 * returns the default file name extension for this type of configuration format.
+			 * 
+			 * @return Returns the default file extension, or null if no default is provided.
+			 */
+			protected String getExtension() {
+				return null;
+			}
+
+			public boolean isType(IFlatConfiguration cfg) {
+				if (cfg != null) {
 					return this.clazz.isAssignableFrom(cfg.getClass());
 				}
 				return false;
 			}
-			
+
 			@SuppressWarnings("unchecked")
-			public T safeCast(IFlatConfiguration ifc)
-			{
-				if (!this.isType(ifc))
-				{
+			public T safeCast(IFlatConfiguration ifc) {
+				if (!this.isType(ifc)) {
 					return null;
 				}
-				try
-				{
+				try {
 					return (T) ifc;
-				}
-				catch (Throwable t)
-				{
+				} catch (Throwable t) {
 					return null;
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * All the flat configuration constructors grouped in one single class.
 	 * 
@@ -193,12 +239,15 @@ public abstract class Configurations {
 	{
 		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(File folder, String fileName);
 		protected abstract IFlatPropertiesConfiguration internal_newPropertiesConfig(SavedFile file);
+		
 		protected abstract IFlatCSVConfiguration internal_newCSVConfig(SavedFile file);
 		protected abstract IFlatCSVConfiguration internal_newCSVConfig(File folder, String fileName);
+		
 		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(SavedFile file, String tableName);
 		protected abstract IFlatSQLiteConfiguration internal_newFlatSQLiteConfig(File folder, String fileName, String tableName);
-		protected abstract IFlatMySQLConfiguration internal_newFlatMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
 		
+		protected abstract IFlatMySQLConfiguration internal_newFlatMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
+
 		public static IFlatPropertiesConfiguration newPropertiesConfig(SavedFile file)
 		{
 			return instance().internal_newPropertiesConfig(file);
@@ -244,13 +293,13 @@ public abstract class Configurations {
 		{
 			return instance().internal_newFlatMySQLConfig(host, port, base, user, pass, tableName);
 		}
-		
+
 		protected final void setInstance() {
 			if (Instance.isEmpty()) {
 				Instance.set(this);
 			}
 		}
-		
+
 		private static FlatConfigurations instance() {
 			if (!Instance.isEmpty()) {
 				return Instance.get();
@@ -261,10 +310,10 @@ public abstract class Configurations {
 			}
 			throw new IllegalStateException("UneiConfiguration has yet to be enabled");
 		}
-		
+
 		private static final StaticInstance<FlatConfigurations> Instance = new StaticInstance<>();
 		public static final StaticInstanceExposer<FlatConfigurations> INSTANCE = new StaticInstanceExposer<>(Instance, true);
-		
+
 		static
 		{
 			try {
@@ -275,194 +324,180 @@ public abstract class Configurations {
 		}
 	}
 	
+	// -- Methods for internal/obfuscated implementation
+
+	protected abstract IJSONConfiguration internal_newJSONConfig(SavedFile file);
+	protected abstract IJSONConfiguration internal_newJSONConfig(File folder, String fileName);
+	protected abstract IJSONConfiguration internal_newJSONConfigFromRawData(String data);
+	protected abstract IJSONConfiguration internal_newJSONConfig(File folder, String fileName, String path);
+	protected abstract IJSONConfiguration internal_newJSONConfig(SavedFile file, String path);
+	protected abstract IJSONConfiguration internal_newJSONConfig(IConfiguration root, String path);
+
+	protected abstract INBTConfiguration internal_newNBTConfig(SavedFile file);
+	protected abstract INBTConfiguration internal_newNBTConfig(File folder, String fileName);
+	protected abstract INBTConfiguration internal_newNBTConfig(File folder, String fileName, String path);
+	protected abstract INBTConfiguration internal_newNBTConfig(SavedFile file, String path);
+	protected abstract INBTConfiguration internal_newNBTConfig(IConfiguration root, String path);
+
+	protected abstract IYAMLConfiguration internal_newYAMLConfig(SavedFile file);
+	protected abstract IYAMLConfiguration internal_newYAMLConfig(File folder, String fileName);
+	protected abstract IYAMLConfiguration internal_newYAMLConfigFromRawData(String data);
+	protected abstract IYAMLConfiguration internal_newYAMLConfig(File folder, String fileName, String path);
+	protected abstract IYAMLConfiguration internal_newYAMLConfig(SavedFile file, String path);
+	protected abstract IYAMLConfiguration internal_newYAMLConfig(IConfiguration root, String path);
+
+	protected abstract IConfiguration internal_newBinaryConfig(SavedFile file);
+	protected abstract IConfiguration internal_newBinaryConfig(File folder, String fileName);
+	protected abstract IConfiguration internal_newBinaryConfig(File folder, String fileName, String path);
+	protected abstract IConfiguration internal_newBinaryConfig(SavedFile file, String path);
+	protected abstract IConfiguration internal_newBinaryConfig(IConfiguration root, String path);
+
+	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(SavedFile file, String tableName);
+	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(File folder, String fileName, String tableName);
+	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(File folder, String fileName, String tableName, String path);
+	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(SavedFile file, String tableName, String path);
+	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(IConfiguration root, String path);
+
+	protected abstract IMySQLConfiguration internal_newMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
+	protected abstract IMySQLConfiguration internal_newMySQLConfig(String host, int port, String base, String user, String pass, String tableName, String path);
+	protected abstract IMySQLConfiguration internal_newMySQLConfig(IConfiguration root, String path);
+
+	// -- Public methods
+	
 	public static IJSONConfiguration newJSONConfig(SavedFile file)
 	{
 		return instance().internal_newJSONConfig(file);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfig(SavedFile file);
-	
+
 	public static IJSONConfiguration newJSONConfig(File folder, String fileName)
 	{
 		return instance().internal_newJSONConfig(folder, fileName);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfig(File folder, String fileName);
-	
+
 	public static IJSONConfiguration newJSONConfigFromRawData(String data)
 	{
 		return instance().internal_newJSONConfigFromRawData(data);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfigFromRawData(String data);
-	
+
 	public static IJSONConfiguration newJSONConfig(File folder, String fileName, String path)
 	{
 		return instance().internal_newJSONConfig(folder, fileName, path);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfig(File folder, String fileName, String path);
-	
+
 	public static IJSONConfiguration newJSONConfig(SavedFile file, String path)
 	{
 		return instance().internal_newJSONConfig(file, path);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfig(SavedFile file, String path);
-	
+
 	public static IJSONConfiguration newJSONConfig(IConfiguration root, String path)
 	{
 		return instance().internal_newJSONConfig(root, path);
 	}
-	
-	protected abstract IJSONConfiguration internal_newJSONConfig(IConfiguration root, String path);
 
 	public static INBTConfiguration newNBTConfig(SavedFile file)
 	{
 		return instance().internal_newNBTConfig(file);
 	}
-	
-	protected abstract INBTConfiguration internal_newNBTConfig(SavedFile file);
-	
+
 	public static INBTConfiguration newNBTConfig(File folder, String fileName)
 	{
 		return instance().internal_newNBTConfig(folder, fileName);
 	}
-	
-	protected abstract INBTConfiguration internal_newNBTConfig(File folder, String fileName);
-	
+
 	public static INBTConfiguration newNBTConfig(File folder, String fileName, String path)
 	{
 		return instance().internal_newNBTConfig(folder, fileName, path);
 	}
-	
-	protected abstract INBTConfiguration internal_newNBTConfig(File folder, String fileName, String path);
-	
+
 	public static INBTConfiguration newNBTConfig(SavedFile file, String path)
 	{
 		return instance().internal_newNBTConfig(file, path);
 	}
-	
-	protected abstract INBTConfiguration internal_newNBTConfig(SavedFile file, String path);
-	
+
 	public static INBTConfiguration newNBTConfig(IConfiguration root, String path)
 	{
 		return instance().internal_newNBTConfig(root, path);
 	}
-	
-	protected abstract INBTConfiguration internal_newNBTConfig(IConfiguration root, String path);
 
 	public static IYAMLConfiguration newYAMLConfig(SavedFile file)
 	{
 		return instance().internal_newYAMLConfig(file);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfig(SavedFile file);
-	
+
 	public static IYAMLConfiguration newYAMLConfig(File folder, String fileName)
 	{
 		return instance().internal_newYAMLConfig(folder, fileName);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfig(File folder, String fileName);
-	
+
 	public static IYAMLConfiguration newYAMLConfigFromRawData(String data)
 	{
 		return instance().internal_newYAMLConfigFromRawData(data);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfigFromRawData(String data);
-	
+
 	public static IYAMLConfiguration newYAMLConfig(File folder, String fileName, String path)
 	{
 		return instance().internal_newYAMLConfig(folder, fileName, path);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfig(File folder, String fileName, String path);
-	
+
 	public static IYAMLConfiguration newYAMLConfig(SavedFile file, String path)
 	{
 		return instance().internal_newYAMLConfig(file, path);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfig(SavedFile file, String path);
-	
+
 	public static IYAMLConfiguration newYAMLConfig(IConfiguration root, String path)
 	{
 		return instance().internal_newYAMLConfig(root, path);
 	}
-	
-	protected abstract IYAMLConfiguration internal_newYAMLConfig(IConfiguration root, String path);
 
 	public static IConfiguration newBinaryConfig(SavedFile file)
 	{
 		return instance().internal_newBinaryConfig(file);
 	}
-	
-	protected abstract IConfiguration internal_newBinaryConfig(SavedFile file);
-	
+
 	public static IConfiguration newBinaryConfig(File folder, String fileName)
 	{
 		return instance().internal_newBinaryConfig(folder, fileName);
 	}
-	
-	protected abstract IConfiguration internal_newBinaryConfig(File folder, String fileName);
-	
+
 	public static IConfiguration newBinaryConfig(File folder, String fileName, String path)
 	{
 		return instance().internal_newBinaryConfig(folder, fileName, path);
 	}
-	
-	protected abstract IConfiguration internal_newBinaryConfig(File folder, String fileName, String path);
-	
+
 	public static IConfiguration newBinaryConfig(SavedFile file, String path)
 	{
 		return instance().internal_newBinaryConfig(file, path);
 	}
-	
-	protected abstract IConfiguration internal_newBinaryConfig(SavedFile file, String path);
-	
+
 	public static IConfiguration newBinaryConfig(IConfiguration root, String path)
 	{
 		return instance().internal_newBinaryConfig(root, path);
 	}
-	
-	protected abstract IConfiguration internal_newBinaryConfig(IConfiguration root, String path);
 
 	public static ISQLiteConfiguration newSQLiteConfig(SavedFile file, String tableName)
 	{
 		return instance().internal_newSQLiteConfig(file, tableName);
 	}
-	
-	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(SavedFile file, String tableName);
-	
+
 	public static ISQLiteConfiguration newSQLiteConfig(File folder, String fileName, String tableName)
 	{
 		return instance().internal_newSQLiteConfig(folder, fileName, tableName);
 	}
-	
-	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(File folder, String fileName, String tableName);
-	
+
 	public static ISQLiteConfiguration newSQLiteConfig(File folder, String fileName, String tableName, String path)
 	{
 		return instance().internal_newSQLiteConfig(folder, fileName, path, tableName);
 	}
-	
-	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(File folder, String fileName, String tableName, String path);
-	
+
 	public static ISQLiteConfiguration newSQLiteConfig(SavedFile file, String tableName, String path)
 	{
 		return instance().internal_newSQLiteConfig(file, tableName, path);
 	}
-	
-	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(SavedFile file, String tableName, String path);
-	
+
 	public static ISQLiteConfiguration newSQLiteConfig(IConfiguration root, String path)
 	{
 		return instance().internal_newSQLiteConfig(root, path);
 	}
-	
-	protected abstract ISQLiteConfiguration internal_newSQLiteConfig(IConfiguration root, String path);
 
 	/**
 	 * Create a new MySQL configuration link instance.
@@ -479,8 +514,6 @@ public abstract class Configurations {
 	{
 		return instance().internal_newMySQLConfig(host, port, base, user, pass, tableName);
 	}
-	
-	protected abstract IMySQLConfiguration internal_newMySQLConfig(String host, int port, String base, String user, String pass, String tableName);
 
 	/**
 	 * Create a new MySQL configuration section link instance.
@@ -498,9 +531,7 @@ public abstract class Configurations {
 	{
 		return instance().internal_newMySQLConfig(host, port, base, user, pass, tableName, path);
 	}
-	
-	protected abstract IMySQLConfiguration internal_newMySQLConfig(String host, int port, String base, String user, String pass, String tableName, String path);
-	
+
 	/**
 	 * Gets a MySQL configuration sub-section at the given path.
 	 * 
@@ -512,9 +543,7 @@ public abstract class Configurations {
 	{
 		return instance().internal_newMySQLConfig(root, path);
 	}
-	
-	protected abstract IMySQLConfiguration internal_newMySQLConfig(IConfiguration root, String path);
-	
+
 	public static IFlatConfiguration newConfig(ConfigurationType type, SavedFile file, String tableName) {
 		switch (type) {
 			case NBT:
@@ -540,7 +569,7 @@ public abstract class Configurations {
 				return null;
 		}
 	}
-	
+
 	public static IFlatConfiguration newConfig(ConfigurationType type, File folder, String fileName, String tableName) {
 		switch (type) {
 			case NBT:
@@ -566,11 +595,14 @@ public abstract class Configurations {
 				return null;
 		}
 	}
-	
+
 	public static <T extends IFlatConfiguration> T newConfig(ConfigurationTypeCls<T> type, File folder, String fileName, String tableName) {
+		if (type.getType() == ConfigurationType.Other) {
+			return type.buildNew(new SavedFile(folder, fileName, type.getExtension()), tableName);
+		}
 		return type.safeCast(newConfig(type.getType(), folder, fileName, tableName));
 	}
-	
+
 	/**
 	 * Gets a configuration sub-section at the given path.
 	 * 
@@ -605,13 +637,13 @@ public abstract class Configurations {
 				return null;
 		}
 	}
-	
+
 	protected final void setInstance() {
 		if (Instance.isEmpty()) {
 			Instance.set(this);
 		}
 	}
-	
+
 	private static Configurations instance() {
 		if (!Instance.isEmpty()) {
 			return Instance.get();
@@ -622,10 +654,10 @@ public abstract class Configurations {
 		}
 		throw new IllegalStateException("UneiConfiguration has yet to be initialized");
 	}
-	
+
 	private static final StaticInstance<Configurations> Instance = new StaticInstance<>();
 	public static final StaticInstanceExposer<Configurations> INSTANCE = new StaticInstanceExposer<>(Instance, true);
-	
+
 	static
 	{
 		try {

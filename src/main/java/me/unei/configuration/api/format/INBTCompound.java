@@ -1,6 +1,7 @@
 package me.unei.configuration.api.format;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a NBT Compound Tag.
@@ -128,6 +129,15 @@ public interface INBTCompound extends INBTTag {
      * @param value the boolean to set as child
      */
     public void setBoolean(String key, boolean value);
+
+    /**
+     * Sets the specified {@link UUID uuid} as a child of this tag with
+     * the specified key as name.
+     *
+     * @param key the name to give to the child
+     * @param value the {@link UUID uuid} to set as child
+     */
+    public void setUUID(String key, UUID value);
 
     /**
      * Returns the direct child element of this tag which has
@@ -276,6 +286,15 @@ public interface INBTCompound extends INBTTag {
      * @return the direct child element with the specified name as boolean
      */
     public boolean getBoolean(String key);
+
+    /**
+     * Returns the direct child element of this tag which has
+     * the specified key as name as {@link UUID uuid}, if possible.
+     *
+     * @param key the name of the child to retrieve
+     * @return the direct child element with the specified name as {@link UUID uuid}
+     */
+    public UUID getUUID(String key);
 
     /**
      * Returns the direct child element of this tag which has

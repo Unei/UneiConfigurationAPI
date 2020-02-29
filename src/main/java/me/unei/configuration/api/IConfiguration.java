@@ -1,5 +1,6 @@
 package me.unei.configuration.api;
 
+import me.unei.configuration.api.exceptions.NoFieldException;
 import me.unei.configuration.api.fs.NavigableFile;
 import me.unei.configuration.formats.StorageType;
 
@@ -24,6 +25,8 @@ public interface IConfiguration extends IFlatConfiguration, NavigableFile {
     /**
      * Returns the direct child element of this configuration which has
      * the specified name, as an {@link IConfiguration IConfiguration}.
+     * <p>
+     * Newbies: Prefer using {@link #getSubSection(String)} over this one.
      *
      * @param name the name of the child to retrieve
      * @return the direct child element with the specified name as an {@link IConfiguration IConfiguration}
@@ -71,6 +74,28 @@ public interface IConfiguration extends IFlatConfiguration, NavigableFile {
      * @return the element at the specified path
      */
     public Object get(String path);
+    
+    /**
+	 * Tries to get the object associated with the specified key as name,
+	 * if possible. In case that name does not refer to a value
+	 * a {@link NoFieldException} will be thrown.
+     * 
+     * @param path the path pointing to the element to retrieve
+     * @return the element at the specified path
+     * @throws NoFieldException if the specified name does not refer to any value.
+     */
+    public Object tryGet(String path) throws NoFieldException;
+
+	/**
+	 * Returns the the value associated with the specified key as name,
+	 * if possible. In case that name does not refer to any value the
+	 * specified default value will be returned (but not stored !).
+	 * 
+	 * @param key the name of the value to retrieve.
+	 * @param def the default value to return of none available.
+	 * @return the value with the specified name.
+	 */
+    public Object get(String path, Object def);
 /*
     /**
      * Returns the element at the specified path, starting at
