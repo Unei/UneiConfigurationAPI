@@ -5,6 +5,7 @@ Allows developpers to easily read, create and manage configurations in almost an
 
 ## UneiConfiguration recommended version :
 
+- for UneiConfigurationAPI v 1.5 : UneiConfiguration v 1.5.0
 - for UneiConfigurationAPI v 1.4 : UneiConfiguration v 1.4.0
 - for UneiConfigurationAPI v 1.3 : UneiConfiguration v 1.3.0
 - for UneiConfigurationAPI v 1.2 : UneiConfiguration v 1.2.8
