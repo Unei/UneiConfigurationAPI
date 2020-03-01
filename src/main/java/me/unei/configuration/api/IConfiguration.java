@@ -91,7 +91,7 @@ public interface IConfiguration extends IFlatConfiguration, NavigableFile {
 	 * if possible. In case that name does not refer to any value the
 	 * specified default value will be returned (but not stored !).
 	 * 
-	 * @param key the name of the value to retrieve.
+	 * @param path the name of the value to retrieve.
 	 * @param def the default value to return of none available.
 	 * @return the value with the specified name.
 	 */
