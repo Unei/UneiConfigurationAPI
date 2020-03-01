@@ -4,40 +4,37 @@ import me.unei.configuration.StaticInstance.StaticInstanceExposer;
 import me.unei.configuration.plugin.IBasicPlugin;
 import me.unei.configuration.plugin.IUpdater;
 
-public abstract class UneiConfiguration implements IBasicPlugin
-{
+public abstract class UneiConfiguration implements IBasicPlugin {
 	private static final StaticInstance<UneiConfiguration> Instance = new StaticInstance<>();
 	public static final StaticInstanceExposer<UneiConfiguration> INSTANCE = new StaticInstanceExposer<>(Instance, false);
-	
-	static
-	{
+
+	static {
 		try {
 			Instance.setConstructor(Class.forName("me.unei.configuration.plugin.UneiConfiguration"), "getInstance");
 		} catch (ClassNotFoundException e) {
 			;
 		}
 	}
-	
+
 	protected final void setInstance() {
 		if (Instance.isEmpty()) {
 			Instance.set(this);
 		}
 	}
-	
+
 	protected static final StaticInstance<UneiConfiguration> getStaticHolder() {
 		return Instance;
 	}
-	
+
 	/**
 	 * Gets  an instance of the running UneiConfiguration plugin.
 	 * 
 	 * @return Returns an instance of a UneiConfiguration.
 	 */
-	public static UneiConfiguration getInstance()
-	{
+	public static UneiConfiguration getInstance() {
 		return INSTANCE.get();
 	}
-	
+
 	/**
 	 * Sends the given name at BStats.
 	 * <p>
@@ -48,25 +45,24 @@ public abstract class UneiConfiguration implements IBasicPlugin
 	 * @param name The name of the plugin depending on UneiConfiguration.
 	 */
 	public abstract void registerMyNameInBStats(String name);
-	
+
 	/**
 	 * Try to load the UneiConfiguration implementation forcefully (useful when using it in stand-alone mode).
 	 * 
 	 * @return Returns this API instance if loaded successfully.
 	 */
-	public static UneiConfiguration tryInstanciate()
-	{
+	public static UneiConfiguration tryInstanciate() {
 		Instance.callBuilder();
 		return getInstance();
 	}
-	
+
 	/**
 	 * Gets the UneiConfiguration updater interface.
 	 * 
 	 * @return Returns the Updater.
 	 */
 	public abstract IUpdater getUpdater();
-	
+
 	/**
 	 * Synchronously check for a new version of UneiConfiguration.
 	 * <p>
@@ -78,7 +74,7 @@ public abstract class UneiConfiguration implements IBasicPlugin
 	 *  {@link IUpdater.Result#FAILED} if the updater was unable to check for a newer version.
 	 */
 	public abstract IUpdater.Result checkVersion();
-	
+
 	/**
 	 * Asynchronously check for a new version of UneiConfiguration.
 	 * <p>
